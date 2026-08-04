@@ -4,3 +4,8 @@ members = [
 ]
 
 resolver = "2"
+
+[workspace.dependencies]
+clap = "4.6.5"
+serde = "1.0.229"
+thiserror = "2.0.19"
