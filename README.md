@@ -10,6 +10,7 @@ Repositori ini menggunakan [Cargo workspace](https://doc.rust-lang.org/book/ch14
 | --- | --- |
 | [`apps-1`](apps-1) | Aplikasi terminal sederhana untuk menambah, melihat, mencari, dan menghapus data siswa. |
 | [`anagram`](anagram) | Contoh pemeriksaan apakah dua kata adalah anagram. |
+| [`password_generator`](password_generator) | membuat password generator sederhana |
 
 ## Prasyarat
 
@@ -87,6 +88,18 @@ kasur dan rusak -> true
 
 Implementasi anagram saat ini ditujukan untuk kata ASCII huruf kecil (`a`–`z`).
 
+### Password generator
+
+```bash
+cargo run -p password_generator
+```
+
+output:
+
+```text
+password : k4tg65ki
+```
+
 ## Struktur proyek
 
 ```text
@@ -94,7 +107,9 @@ Implementasi anagram saat ini ditujukan untuk kata ASCII huruf kecil (`a`–`z`)
 ├── Cargo.toml          # Konfigurasi workspace
 ├── apps-1/             # Aplikasi pengelolaan data siswa di terminal
 │   └── src/main.rs
-└── anagram/            # Contoh algoritma anagram
+├── anagram/            # Contoh algoritma anagram
+│   └── src/main.rs
+└── password_generator/ # password generator
     └── src/main.rs
 ```
 

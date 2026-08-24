@@ -1,7 +1,7 @@
 [workspace]
 members = [
     "apps-1",
-    "anagram",
+    "anagram", "password_generator",
 ]
 
 resolver = "2"
