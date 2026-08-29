@@ -35,8 +35,28 @@ impl Password {
 
         println!("password : {}", result.concat());
     }
+
+    const fn is_valid() -> bool {
+        if ALPHABET.len() > 26 || ALPHABET.len() <= 25 {
+            return false;
+        }
+        true
+    }
 }
 
 fn main() {
+    if Password::is_valid() {
+        Password::generate();
+    }
+}
+
+#[test]
+fn test_password_is_valid() {
+    assert!(Password::is_valid());
+}
+
+#[test]
+fn test_password_generate_runs_without_panic() {
+    // Memastikan `Password::generate()` dapat dipanggil tanpa error/panic
     Password::generate();
 }

@@ -5,7 +5,7 @@
 // 3. menu mencari berdasarkan nama/nisn siswa.
 // 4. menu menghapus siswa.
 
-use std::io::stdin;
+use std::io::{self, Write};
 
 /// struct untuk menyimpan data.
 struct KartuSiswa {
@@ -84,9 +84,10 @@ fn menu(kartu: &mut KartuSiswa) {
         println!("4. hapus siswa");
         println!("5. keluar");
 
-        println!("\nPilih (1-5):");
+        print!("\nPilih (1-5): ");
 
-        stdin().read_line(&mut input).unwrap();
+        let _ = io::stdout().flush();
+        io::stdin().read_line(&mut input).unwrap();
 
         if let Ok(s) = input.trim().parse::<i16>() {
             if s <= 5 && s > 0 {
@@ -122,21 +123,27 @@ fn menu_tambah_siswa(kartu: &mut KartuSiswa) {
     println!("+--------------------------+");
     println!("|      tambah siswa        |");
     println!("+--------------------------+");
-    println!("Masukkan nama : ");
-    stdin().read_line(&mut nama).expect("nama invalid");
+    print!("Masukkan nama : ");
+    let _ = io::stdout().flush();
+    io::stdin().read_line(&mut nama).expect("nama invalid");
 
-    println!("Masukkan nisn : ");
-    stdin().read_line(&mut nisn).expect("nisn invalid");
+    print!("Masukkan nisn : ");
+    let _ = io::stdout().flush();
+    io::stdin().read_line(&mut nisn).expect("nisn invalid");
 
     let nisn: i32 = nisn.trim().parse().unwrap();
     kartu.tambah_siswa(nama.trim().to_string(), nisn);
 
-    println!("\ntambah siswa: ");
-    stdin().read_line(&mut input).unwrap();
+    print!("\ntambah siswa: ");
+    let _ = io::stdout().flush();
+    io::stdin().read_line(&mut input).unwrap();
 
     if input.trim() == "y" {
         menu_tambah_siswa(kartu);
     } else if input.trim() == "n" {
+        menu(kartu);
+    } else {
+        println!("Input invalid");
         menu(kartu);
     }
 }
@@ -154,7 +161,7 @@ fn menu_list_siswa(kartu: &mut KartuSiswa) {
     }
 
     println!("\npencet apa saja untuk kembali");
-    stdin()
+    io::stdin()
         .read_line(&mut input.to_string())
         .expect("Input harus y/n");
 
@@ -176,8 +183,9 @@ fn menu_cari_siswa(kartu: &mut KartuSiswa) {
     println!("2. berdasarkan nisn");
     println!("3. kembali ke menu");
 
-    println!("Pilih 1-3 : ");
-    stdin().read_line(&mut pilihan).expect("pilih 1-3");
+    print!("Pilih 1-3 : ");
+    let _ = io::stdout().flush();
+    io::stdin().read_line(&mut pilihan).expect("pilih 1-3");
 
     if let Ok(p) = pilihan.trim().parse::<i16>() {
         if p == 1 {
@@ -194,8 +202,9 @@ fn menu_cari_siswa(kartu: &mut KartuSiswa) {
         println!("invalid");
     }
 
-    println!("\ncari siswa (y/n)");
-    stdin().read_line(&mut input).unwrap();
+    print!("\ncari siswa (y/n)");
+    let _ = io::stdout().flush();
+    io::stdin().read_line(&mut input).unwrap();
 
     if input.trim() == "y" {
         menu_cari_siswa(kartu);
@@ -208,8 +217,11 @@ fn menu_cari_siswa(kartu: &mut KartuSiswa) {
 fn cari_berdasarkan_nama(kartu: &KartuSiswa) {
     let mut search_input = String::new();
 
-    println!("Masukkan nama : ");
-    stdin().read_line(&mut search_input).expect("nama invalid");
+    print!("Masukkan nama : ");
+    let _ = io::stdout().flush();
+    io::stdin()
+        .read_line(&mut search_input)
+        .expect("nama invalid");
 
     let filter = kartu.data.iter().find(|&x| search_input.trim() == x.0);
 
@@ -220,8 +232,11 @@ fn cari_berdasarkan_nama(kartu: &KartuSiswa) {
 fn cari_berdasarkan_nisn(kartu: &KartuSiswa) {
     let mut search_input = String::new();
 
-    println!("Masukkan nisn : ");
-    stdin().read_line(&mut search_input).expect("nisn invalid");
+    print!("Masukkan nisn : ");
+    let _ = io::stdout().flush();
+    io::stdin()
+        .read_line(&mut search_input)
+        .expect("nisn invalid");
 
     let search_input: i32 = search_input.trim().parse().unwrap();
 
@@ -238,13 +253,15 @@ fn menu_hapus_siswa(kartu: &mut KartuSiswa) {
     println!("+--------------------------+");
     println!("|        hapus siswa       |");
     println!("+--------------------------+");
-    println!("Masukkan nama yg akan dihapus : ");
-    stdin().read_line(&mut nama).unwrap();
+    print!("Masukkan nama yg akan dihapus : ");
+    let _ = io::stdout().flush();
+    io::stdin().read_line(&mut nama).unwrap();
 
     kartu.hapus_siswa(&nama);
 
-    println!("hapus siswa lagi (y/n)");
-    stdin().read_line(&mut input).unwrap();
+    print!("hapus siswa lagi (y/n): ");
+    let _ = io::stdout().flush();
+    io::stdin().read_line(&mut input).unwrap();
 
     if input.trim() == "y" {
         menu_hapus_siswa(kartu);
@@ -256,8 +273,52 @@ fn menu_hapus_siswa(kartu: &mut KartuSiswa) {
 /// main entry program
 fn main() {
     let mut kartu = KartuSiswa::new();
-    kartu.tambah_siswa(String::from("asep"), 80);
-    kartu.tambah_siswa(String::from("agus"), 81);
 
     menu(&mut kartu);
+}
+
+#[test]
+fn test_tambah_siswa() {
+    let mut kartu = KartuSiswa::new();
+    kartu.tambah_siswa("Asep".to_string(), 1340);
+    assert_eq!(kartu.data.len(), 1);
+    assert_eq!(kartu.data[0], ("Asep".to_string(), 1340));
+}
+
+#[test]
+fn test_tambah_siswa_duplikat_nama() {
+    let mut kartu = KartuSiswa::new();
+    kartu.tambah_siswa("Asep".to_string(), 1340);
+    kartu.tambah_siswa("Asep".to_string(), 1341);
+    // Tambah dengan nama sama tidak boleh menambahkan ke array
+    assert_eq!(kartu.data.len(), 1);
+}
+
+#[test]
+fn test_tambah_siswa_duplikat_nisn() {
+    let mut kartu = KartuSiswa::new();
+    kartu.tambah_siswa("Asep".to_string(), 1340);
+    kartu.tambah_siswa("Budi".to_string(), 1340);
+    // Tambah dengan NISN sama tidak boleh menambahkan ke array
+    assert_eq!(kartu.data.len(), 1);
+}
+
+#[test]
+fn test_hapus_siswa() {
+    let mut kartu = KartuSiswa::new();
+    kartu.tambah_siswa("Asep".to_string(), 1340);
+    kartu.tambah_siswa("Budi".to_string(), 1341);
+    
+    kartu.hapus_siswa("Asep");
+    assert_eq!(kartu.data.len(), 1);
+    assert_eq!(kartu.data[0], ("Budi".to_string(), 1341));
+}
+
+#[test]
+fn test_hapus_siswa_tidak_ada() {
+    let mut kartu = KartuSiswa::new();
+    kartu.tambah_siswa("Asep".to_string(), 1340);
+    
+    kartu.hapus_siswa("Cici");
+    assert_eq!(kartu.data.len(), 1);
 }
